@@ -91,14 +91,15 @@ Initializer
 
 Rule
   = name:IdentifierName __
+    params:(RuleParams __)?
     displayName:(StringLiteral __)?
     "=" __
     expression:Expression EOS
     {
-      return {
-        type:        "rule",
-        name:        name,
-        expression:  displayName !== null
+      var node = {
+        type:       "rule",
+        name:       name,
+        expression: displayName !== null
           ? {
               type:       "named",
               name:       displayName[0],
@@ -106,8 +107,18 @@ Rule
               location:   location()
             }
           : expression,
-        location:    location()
+        location:   location()
       };
+      if (params !== null) { node.params = params[0]; }
+      return node;
+    }
+
+RuleParams
+  = "<" __ params:RuleParamList __ ">" { return params; }
+
+RuleParamList
+  = head:Identifier tail:(_ "," _ Identifier)* {
+      return [head].concat(extractList(tail, 3));
     }
 
 Expression
@@ -208,7 +219,9 @@ PrimaryExpression
 
 RuleReferenceExpression
   = name:IdentifierName !(__ (StringLiteral __)? "=") args:RuleArguments? {
-      return { type: "rule_ref", name: name, location: location(), args:args };
+      var node = { type: "rule_ref", name: name, location: location() };
+      if (args !== null) { node.args = args; }
+      return node;
     }
 
 /*
