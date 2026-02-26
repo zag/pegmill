@@ -207,8 +207,152 @@ PrimaryExpression
     }
 
 RuleReferenceExpression
-  = name:IdentifierName !(__ (StringLiteral __)? "=") {
-      return { type: "rule_ref", name: name, location: location() };
+  = name:IdentifierName !(__ (StringLiteral __)? "=") args:RuleArguments? {
+      return { type: "rule_ref", name: name, location: location(), args:args };
+    }
+
+/*
+ parametric subruls named arguments
+ end_code< name, test: &content, test: 12 >
+
+
+ {
+   "type": "grammar",
+   "initializer": null,
+   "rules": [
+      {
+         "type": "rule",
+         "name": "Gramm",
+         "expression": {
+            "type": "rule_ref",
+            "name": "test",
+            "location": {
+               "start": {
+                  "offset": 16,
+                  "line": 3,
+                  "column": 7
+               },
+               "end": {
+                  "offset": 34,
+                  "line": 3,
+                  "column": 25
+               }
+            },
+            "args": [
+               {
+                  "name": "test",
+                  "value": {
+                     "type": "expression",
+                     "value": {
+                        "type": "literal",
+                        "value": "test",
+                        "ignoreCase": false,
+                        "location": {
+                           "start": {
+                              "offset": 27,
+                              "line": 3,
+                              "column": 18
+                           },
+                           "end": {
+                              "offset": 33,
+                              "line": 3,
+                              "column": 24
+                           }
+                        }
+                     }
+                  }
+               }
+            ]
+         },
+         "location": {
+            "start": {
+               "offset": 1,
+               "line": 2,
+               "column": 1
+            },
+            "end": {
+               "offset": 35,
+               "line": 4,
+               "column": 1
+            }
+         }
+      },
+      {
+         "type": "rule",
+         "name": "test",
+         "expression": {
+            "type": "literal",
+            "value": "e",
+            "ignoreCase": false,
+            "location": {
+               "start": {
+                  "offset": 42,
+                  "line": 4,
+                  "column": 8
+               },
+               "end": {
+                  "offset": 45,
+                  "line": 4,
+                  "column": 11
+               }
+            }
+         },
+         "location": {
+            "start": {
+               "offset": 35,
+               "line": 4,
+               "column": 1
+            },
+            "end": {
+               "offset": 45,
+               "line": 4,
+               "column": 11
+            }
+         }
+      }
+   ],
+   "location": {
+      "start": {
+         "offset": 0,
+         "line": 1,
+         "column": 1
+      },
+      "end": {
+         "offset": 45,
+         "line": 4,
+         "column": 11
+      }
+   }
+}
+
+*/
+
+RuleArguments
+  = "<" __ args:RuleArgumentList __ ">" {
+      return args;
+    }   
+RuleArgumentList
+  = head:RuleArgument tail:(_ "," _ RuleArgument)* {
+      return [head].concat(extractList(tail, 3));
+    }
+RuleArgument
+  = name:Identifier _ ":" _ value:RuleArgumentValue {
+      return { name: name, value: value };
+    }
+    /
+    name:Identifier _ {
+      return { name: name, value: name };
+    }
+
+RuleArgumentValue
+  = expression:Expression {
+      return { type: "expression", value: expression };
+    }
+  / value:StringLiteral {
+      return { type: "string", value: value };
+    }
+  / value:IdentifierName {
+      return { type: "identifier", value: value };
     }
 
 SemanticPredicateExpression
