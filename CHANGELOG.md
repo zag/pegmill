@@ -26,12 +26,17 @@ Forked from [PEG.js 0.10.0](https://github.com/pegjs/pegjs/blob/master/CHANGELOG
 - Parser lookahead fix: `RuleReferenceExpression` updated to prevent template definitions
   from being parsed as expression elements in preceding rules
 - Renamed project from PEG.js fork to **Pegmill**; binary renamed `pegjs` → `pegmill`
-- Package renamed to `pegmill` on npm; homepage: `https://pegmill.org`
+- Package renamed to `pegmill` on npm; homepage: `https://github.com/zag/pegmill`
 - License changed from MIT to Apache 2.0 (NOTICE.md attributes upstream MIT code)
 
 ### Changed
 - `lib/peg.js` VERSION: `0.10.0` → `0.1.0`
 - `package.json` `engines.node`: `>=0.10` → `>=14`
+
+### References
+- Parametric rules approach inspired by [peggyjs/peggy#337](https://github.com/peggyjs/peggy/pull/337)
+  (quadristan, MIT) — reference implementation of template instantiation
+- Related upstream discussion: [peggyjs/peggy#634](https://github.com/peggyjs/peggy/issues/634)
 
 [Unreleased]: https://github.com/zag/pegmill/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/zag/pegmill/releases/tag/v0.1.0
