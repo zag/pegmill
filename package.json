@@ -8,10 +8,10 @@
     "WebAssembly",
     "WASM"
   ],
-  "homepage": "https://pegmill.org",
+  "homepage": "https://github.com/zag/pegmill",
   "bugs": "https://github.com/zag/pegmill/issues",
   "license": "Apache-2.0",
-  "author": "Aliaksandr Zahatski (https://zag.im/)",
+  "author": "Aliaksandr Zahatski",
   "files": [
     "CHANGELOG.md",
     "LICENSE",
@@ -58,6 +58,6 @@
     "uglify-js": "2.7.0"
   },
   "engines": {
-    "node": ">=0.10"
+    "node": ">=14"
   }
 }

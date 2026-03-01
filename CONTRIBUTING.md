@@ -1,56 +1,66 @@
-# Contribution Guidelines
+# Contributing to Pegmill
 
-The best way to contribute to PEG.js is by using it and giving back useful
-feedback — reporting discovered bugs or requesting missing features.
+## Ways to Contribute
 
-You can also contribute code, but be advised that many patches end up being
-rejected, usually because the change doesn’t fit the project or because of
-various implementation issues. In almost all cases it’s best to get in touch
-first before sending a patch.
+**Reporting bugs** — open an [issue](https://github.com/zag/pegmill/issues) on GitHub.
+Before submitting, search existing issues to avoid duplicates. Include steps to reproduce,
+expected result, and actual result. A minimal grammar + input example is most helpful.
 
-## Reporting Bugs
-
-Report bugs using [GitHub issues][issues]. Before submitting a bug report,
-please [search existing reports][issues-search-bugs] to see if the bug wasn’t
-reported already.
-
-In the report, please describe:
-
-  * Steps to reproduce the problem
-  * Expected result(s)
-  * Actual result(s)
-
-In most cases, it’s also useful to include a **minimal** example (grammar +
-input) reproducing the problem.
-
-## Requesting Features
-
-Request features using [GitHub issues][issues]. Before submitting a feature
-request, please [search existing requests][issues-search-enhancements] to see if
-the feature wasn’t requested already.
-
-In the request, please describe:
-
-  * How the feature should work
-  * Use case(s) behind it
+**Requesting features** — open an [issue](https://github.com/zag/pegmill/issues) and
+describe the use case. Check existing requests first.
 
 ## Contributing Code
 
-Contribute code using [GitHub pull requests][pulls]. For non-trivial changes,
-first file a corresponding bug report or feature request. This will ensure the
-*problem* is separated from a *solution*.
+Fork the repository, create a branch, make your changes, and open a pull request.
 
-Split your change into atomic commits with descriptive messages adhering to
-[these conventions][git-commit-messages]. Have a look in the commit history to
-see good examples.
+### Commit Messages
 
-When appropriate, add documentation and tests.
+Use the conventional commits format:
 
-Before submitting, make sure your change passes the specs (`make spec`) and
-ESLint checks (`make lint`).
+```
+<type>(<scope>): <short summary>
+```
 
-[issues]: https://github.com/pegjs/pegjs/issues
-[issues-search-bugs]: https://github.com/pegjs/pegjs/issues?q=is%3Aopen+is%3Aissue+label%3ABug
-[issues-search-enhancements]: https://github.com/pegjs/pegjs/issues?q=is%3Aopen+is%3Aissue+label%3AEnhancement
-[pulls]: https://github.com/pegjs/pegjs/pulls
-[git-commit-messages]: http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+Supported scopes:
+
+| Scope     | What it covers                                              |
+|-----------|-------------------------------------------------------------|
+| `grammar` | Language syntax, `src/parser.pegjs`, `lib/parser.js`       |
+| `pass`    | Compiler passes in `lib/compiler/passes/`                   |
+| `build`   | Makefile, npm scripts, browserify                           |
+| `chore`   | Dependencies, CI, housekeeping                              |
+
+Examples:
+
+```
+feat(grammar): add parametric rule syntax Rule<Param>
+fix(pass): correct clone-expression handling of sequence nodes
+chore: upgrade eslint to 8.x
+```
+
+### Before Submitting
+
+Run the test suite and linter:
+
+```console
+$ make spec
+$ make lint
+```
+
+All tests must pass and linter must report no errors.
+
+## Contribution License
+
+Pegmill uses the **Developer Certificate of Origin (DCO)** — no CLA required.
+
+Sign off each commit with:
+
+```console
+$ git commit -s -m "feat(grammar): your change"
+```
+
+This adds a `Signed-off-by:` trailer confirming you have the right to submit
+the contribution under the Apache 2.0 license. See https://developercertificate.org/
+for the full text.
+
+Apache 2.0 already includes a patent grant, so no separate CLA is needed.
