@@ -9,7 +9,7 @@
     "WASM"
   ],
   "homepage": "https://github.com/zag/pegmill",
-  "bugs": "https://github.com/zag/pegmill/issues",
+  "bugs": { "url": "https://github.com/zag/pegmill/issues" },
   "license": "Apache-2.0",
   "author": "Aliaksandr Zahatski",
   "files": [
@@ -46,7 +46,7 @@
   ],
   "main": "lib/peg",
   "bin": "bin/pegmill",
-  "repository": "zag/pegmill",
+  "repository": { "type": "git", "url": "https://github.com/zag/pegmill.git" },
   "scripts": {
     "test": "make lint && make spec"
   },

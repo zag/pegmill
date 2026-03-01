@@ -1,6 +1,6 @@
 # ===== Variables =====
 
-PEGJS_VERSION = `cat $(VERSION_FILE)`
+PEGMILL_VERSION = `cat $(VERSION_FILE)`
 
 # ===== Directories =====
 
@@ -21,8 +21,8 @@ PARSER_SRC_FILE     = $(SRC_DIR)/parser.pegjs
 PARSER_OUT_FILE     = $(LIB_DIR)/parser.js
 PARSER_OUT_FILE_NEW = $(LIB_DIR)/parser.js.new
 
-BROWSER_FILE_DEV = $(BROWSER_DIR)/peg-$(PEGJS_VERSION).js
-BROWSER_FILE_MIN = $(BROWSER_DIR)/peg-$(PEGJS_VERSION).min.js
+BROWSER_FILE_DEV = $(BROWSER_DIR)/peg-$(PEGMILL_VERSION).js
+BROWSER_FILE_MIN = $(BROWSER_DIR)/peg-$(PEGMILL_VERSION).min.js
 
 VERSION_FILE = VERSION
 
@@ -32,7 +32,7 @@ ESLINT        = $(NODE_MODULES_BIN_DIR)/eslint
 BROWSERIFY    = $(NODE_MODULES_BIN_DIR)/browserify
 UGLIFYJS      = $(NODE_MODULES_BIN_DIR)/uglifyjs
 JASMINE_NODE  = $(NODE_MODULES_BIN_DIR)/jasmine-node
-PEGJS         = $(BIN_DIR)/pegjs
+PEGMILL       = $(BIN_DIR)/pegmill
 BENCHMARK_RUN = $(BENCHMARK_DIR)/run
 
 # ===== Targets =====
@@ -45,9 +45,9 @@ parser:
 	# We need to prepend ESLint header to the generated parser file because we
 	# don't want the various unused variables there to get reported. This is a bit
 	# tricky because the file is used when generating its own new version, which
-	# means we can't start writing the header there until we call $(PEGJS).
+	# means we can't start writing the header there until we call $(PEGMILL).
 
-	$(PEGJS) -o $(PARSER_OUT_FILE_NEW) $(PARSER_SRC_FILE)
+	$(PEGMILL) -o $(PARSER_OUT_FILE_NEW) $(PARSER_SRC_FILE)
 
 	rm -f $(PARSER_OUT_FILE)
 
@@ -66,12 +66,12 @@ browser:
 	rm -f $(BROWSER_FILE_MIN)
 
 	echo '/*'                                                                          >> $(BROWSER_FILE_DEV)
-	echo " * PEG.js $(PEGJS_VERSION)"                                                  >> $(BROWSER_FILE_DEV)
+	echo " * Pegmill $(PEGMILL_VERSION)"                                               >> $(BROWSER_FILE_DEV)
 	echo ' *'                                                                          >> $(BROWSER_FILE_DEV)
-	echo ' * http://pegjs.org/'                                                        >> $(BROWSER_FILE_DEV)
+	echo ' * https://github.com/zag/pegmill'                                           >> $(BROWSER_FILE_DEV)
 	echo ' *'                                                                          >> $(BROWSER_FILE_DEV)
-	echo ' * Copyright (c) 2010-2016 David Majda'                                      >> $(BROWSER_FILE_DEV)
-	echo ' * Licensed under the MIT license.'                                          >> $(BROWSER_FILE_DEV)
+	echo ' * Copyright (c) 2026 Aliaksandr Zahatski'                                   >> $(BROWSER_FILE_DEV)
+	echo ' * Licensed under the Apache License 2.0.'                                   >> $(BROWSER_FILE_DEV)
 	echo ' */'                                                                         >> $(BROWSER_FILE_DEV)
 
 	$(BROWSERIFY) --standalone peg $(MAIN_FILE) >> $(BROWSER_FILE_DEV)
@@ -102,7 +102,7 @@ lint:
 	  `find $(SPEC_DIR) -name '*.js' -and -not -path '$(SPEC_DIR)/vendor/*'` \
 	  $(BENCHMARK_DIR)/*.js                                                  \
 	  $(BENCHMARK_RUN)                                                       \
-	  $(PEGJS)
+	  $(PEGMILL)
 
 .PHONY:  all parser browser browserclean spec benchmark lint
 .SILENT: all parser browser browserclean spec benchmark lint
