@@ -2,7 +2,7 @@
 
 "use strict";
 
-describe("PEG.js API", function() {
+describe("Pegmill API", function() {
   describe("generate", function() {
     it("generates a parser", function() {
       var parser = peg.generate('start = "a"');

@@ -6,7 +6,11 @@
     "parser generator",
     "PEG",
     "WebAssembly",
-    "WASM"
+    "WASM",
+    "parametric",
+    "generics",
+    "grammar-templates",
+    "pegjs"
   ],
   "homepage": "https://github.com/zag/pegmill",
   "bugs": { "url": "https://github.com/zag/pegmill/issues" },

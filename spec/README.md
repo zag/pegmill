@@ -1,16 +1,16 @@
-PEG.js Spec Suite
-=================
+Pegmill Spec Suite
+==================
 
-This is the PEG.js spec suite. It ensures PEG.js works correctly. All specs
+This is the Pegmill spec suite. It ensures Pegmill works correctly. All specs
 should always pass on all supported platforms.
 
 Running in Node.js
 ------------------
 
-All commands in the following steps need to be executed in PEG.js root directory
+All commands in the following steps need to be executed in Pegmill root directory
 (one level up from this one).
 
-  1. Install all PEG.js dependencies, including development ones:
+  1. Install all Pegmill dependencies, including development ones:
 
      ```console
      $ npm install
@@ -27,24 +27,24 @@ All commands in the following steps need to be executed in PEG.js root directory
 Running in the Browser
 ----------------------
 
-All commands in the following steps need to be executed in PEG.js root directory
+All commands in the following steps need to be executed in Pegmill root directory
 (one level up from this one).
 
   1. Make sure you have Node.js installed.
 
-  2. Install all PEG.js dependencies, including development ones:
+  2. Install all Pegmill dependencies, including development ones:
 
      ```console
      $ npm install
      ```
 
-  3. Build browser version of PEG.js:
+  3. Build browser version of Pegmill:
 
      ```console
      $ make browser
      ```
 
-  4. Serve PEG.js root directory using a web server:
+  4. Serve Pegmill root directory using a web server:
 
      ```console
      $ node_modules/.bin/http-server

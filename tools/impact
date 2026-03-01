@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Measures impact of a Git commit (or multiple commits) on generated parsers'
-# speed and size. Makes sense to use only on PEG.js Git repository checkout.
+# speed and size. Makes sense to use only on Pegmill Git repository checkout.
 
 set -e
 export LC_ALL=C
@@ -70,7 +70,7 @@ print_usage() {
   echo "  $0 <commit_before> <commit_after>"
   echo
   echo "Measures impact of a Git commit (or multiple commits) on generated parsers'"
-  echo "speed and size. Makes sense to use only on PEG.js Git repository checkout."
+  echo "speed and size. Makes sense to use only on Pegmill Git repository checkout."
 }
 
 cd_to_root() {

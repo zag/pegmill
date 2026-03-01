@@ -1,8 +1,8 @@
 /*
- * PEG.js Grammar
- * ==============
+ * Pegmill Grammar
+ * ===============
  *
- * PEG.js grammar syntax is designed to be simple, expressive, and similar to
+ * Pegmill grammar syntax is designed to be simple, expressive, and similar to
  * JavaScript where possible. This means that many rules, especially in the
  * lexical part, are based on the grammar from ECMA-262, 5.1 Edition [1]. Some
  * are directly taken or adapted from the JavaScript example grammar (see

@@ -2,11 +2,9 @@
 
 # Pegmill
 
-> PEG parser generator with parametric grammar rules
+> The only JavaScript PEG parser generator with parametric (generic) grammar rules
 
-Pegmill is a fork of [PEG.js 0.10.0](https://github.com/pegjs/pegjs)
-(© 2010–2016 David Majda, MIT License) extended with parametric grammar rules
-and targeting a future WebAssembly code generation backend.
+WASM backend coming · Built for the LLM era
 
 ## Features
 
@@ -15,7 +13,15 @@ and targeting a future WebAssembly code generation backend.
 - Excellent error reporting out of the box
 - **Parametric grammar rules** — define reusable rule templates with `Rule<Param>` syntax
 - CLI and JavaScript API
-- Roadmap: WASM backend (Phase 2), LLM constrained decoding (Phase 3)
+- **WASM backend** — compile grammars to WebAssembly (coming in v0.2.0)
+- **LLM constrained decoding** — restrict language model output to valid grammar (v0.3.0)
+
+## Use Cases
+
+- **DSLs** — query languages, config parsers, template engines
+- **Data formats** — custom protocols, structured log parsers
+- **Language tooling** — linters, formatters, transpilers
+- **LLM output validation** — constrain model output to valid grammar structure (v0.3.0)
 
 ## Installation
 
@@ -31,26 +37,32 @@ $ npm install pegmill
 
 ## Quick Start
 
-**1. Write a grammar** (`greet.pegjs`):
+**1. Write a grammar with parametric rules** (`parens.pegjs`):
 
 ```pegjs
-start
-  = "Hello, " name:$[a-zA-Z]+ { return "Greeting: " + name; }
+// One template — two parsers for the price of one
+Parens<Content>
+  = "(" val:Content ")" { return val; }
+
+NumberInParens = Parens<Integer>
+WordInParens   = Parens<Word>
+
+Integer = digits:$[0-9]+ { return parseInt(digits, 10); }
+Word    = $[a-zA-Z]+
 ```
 
 **2. Generate a parser:**
 
 ```console
-$ pegmill greet.pegjs
+$ pegmill parens.pegjs
 ```
 
-This writes `greet.js` next to the grammar file.
-
-**3. Use the parser in Node.js:**
+**3. Use it:**
 
 ```javascript
-var parser = require("./greet");
-parser.parse("Hello, World");  // → "Greeting: World"
+const parser = require("./parens");
+parser.parse("(42)",    { startRule: "NumberInParens" }); // → 42
+parser.parse("(hello)", { startRule: "WordInParens" });   // → "hello"
 ```
 
 ## Parametric Rules
@@ -74,16 +86,7 @@ Integer = digits:$[0-9]+ { return parseInt(digits, 10); }
 Word    = $[a-zA-Z]+
 ```
 
-### How It Works
-
-The compiler resolves parametric references at compile time via two passes:
-
-1. **`clone-expression`** — deep-copies AST subtrees so each instantiation is independent
-2. **`instantiate-templates`** — substitutes the parameter rule everywhere the parameter
-   name appears inside the template body
-
-Rule references carry an `args` array of `{name, value}` objects. For simple identifiers,
-`name === value`.
+> For compiler internals see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## CLI Reference
 
@@ -115,14 +118,14 @@ When no input file is given, standard input is used.
 ## JavaScript API
 
 ```javascript
-var peg = require("pegmill");
+const peg = require("pegmill");
 
 // Generate a parser object directly
-var parser = peg.generate('start = ("a" / "b")+');
+const parser = peg.generate('start = ("a" / "b")+');
 parser.parse("aabb");  // → ["a", "a", "b", "b"]
 
 // Generate parser source code as a string
-var source = peg.generate('start = [0-9]+', { output: "source" });
+const source = peg.generate('start = [0-9]+', { output: "source" });
 ```
 
 ### `peg.generate(grammar, options)`
@@ -144,63 +147,33 @@ var source = peg.generate('start = [0-9]+', { output: "source" });
 Pegmill uses PEG (Parsing Expression Grammar) syntax. Comments follow JavaScript
 conventions (`//` and `/* */`). Whitespace between tokens is ignored.
 
-### Rule Structure
-
 ```pegjs
 ruleName "human-readable name"
   = parsingExpression
 ```
 
-### Parsing Expression Types
+Common expressions: `"literal"`, `.` (any char), `[a-z]` (char class), `rule` (reference),
+`e*` (zero or more), `e+` (one or more), `e?` (optional), `e1 / e2` (ordered choice),
+`e1 e2` (sequence), `label:e` (label), `&e` / `!e` (lookahead), `$e` (return text),
+`{ action }` (JavaScript action code).
 
-| Expression | Matches |
-|------------|---------|
-| `"literal"` / `'literal'` | Exact string (append `i` for case-insensitive) |
-| `.` | Any single character |
-| `[chars]` | One character from the set; `[^chars]` inverts; `[a-z]` ranges; append `i` for case-insensitive |
-| `rule` | Recursively matches the named rule |
-| `(expr)` | Subexpression |
-| `expr *` | Zero or more (greedy, no backtracking) |
-| `expr +` | One or more (greedy, no backtracking) |
-| `expr ?` | Optional — returns `null` on no match |
-| `& expr` | Positive lookahead — succeeds without consuming input |
-| `! expr` | Negative lookahead — succeeds without consuming input |
-| `& { pred }` | Semantic predicate (JS code returning truthy = match) |
-| `! { pred }` | Negative semantic predicate |
-| `$ expr` | Returns matched text instead of match result |
-| `label:expr` | Labels the match result for use in actions |
-| `e1 e2 … en` | Sequence — returns array of results |
-| `expr { action }` | Action — JS code returning the match result |
-| `e1 / e2 / … / en` | Ordered choice — tries each in order |
+Inside action blocks: labeled results as variables, `text()`, `location()`, `options`,
+`expected(description)`, `error(message)`.
 
-### Initializer
-
-Code in `{ }` before the first rule runs once before parsing. Variables and functions
-defined here are accessible in all rule actions and semantic predicates.
-
-### Actions and Predicates
-
-Inside `{ action }` and `{ predicate }` code blocks, the following are available:
-
-- Labeled match results as local variables
-- `text()` — returns the text matched by the expression (actions only)
-- `location()` — returns `{ start, end }` with `offset`, `line`, `column`
-- `options` — the options object passed to `parse()`
-- `expected(description)` — throws a parse error
-- `error(message)` — throws a parse error with a custom message
+Full syntax reference: [`src/parser.pegjs`](src/parser.pegjs)
 
 ## Compatibility
 
 - **Node.js**: 14 or later
 - Generated parsers work in any environment where ES5 is available
 
-## Roadmap
+## Vision
 
-| Phase | Description | Status |
-|-------|-------------|--------|
-| 1 | Parametric grammar rules | ✅ Done (v0.1.0) |
-| 2 | WASM backend (WebAssembly code generation) | Planned |
-| 3 | LLM constrained decoding support | Research |
+**v0.1.0** ✅ Parametric grammar rules — write reusable rule templates with `Rule<Param>` syntax
+
+**v0.2.0** 🔜 WASM backend — compile grammars directly to WebAssembly
+
+**v0.3.0** 🔬 LLM constrained decoding — define valid output structure for language models
 
 ## License & Attribution
 
