@@ -95,6 +95,24 @@ describe("cloneExpression", function() {
     });
   });
 
+  describe("args substitution in parametric rule_ref", function() {
+    it("substitutes param names inside args", function() {
+      // rule_ref{name:"Inner", args:[{name:"A", value:"A"}]} with {A:"Word"}
+      // → rule_ref{name:"Inner", args:[{name:"Word", value:"Word"}]}
+      var expr = { type: "rule_ref", name: "Inner", args: [{ name: "A", value: "A" }] };
+      var result = cloneExpression(expr, { "A": "Word" });
+      expect(result.name).toBe("Inner");
+      expect(result.args[0].name).toBe("Word");
+      expect(result.args[0].value).toBe("Word");
+    });
+
+    it("keeps args unchanged when param not in paramMap", function() {
+      var expr = { type: "rule_ref", name: "Inner", args: [{ name: "X", value: "X" }] };
+      var result = cloneExpression(expr, { "A": "Word" });
+      expect(result.args[0].name).toBe("X");
+    });
+  });
+
   describe("leaf nodes", function() {
     it("clones literal unchanged", function() {
       var expr = { type: "literal", value: "hello", ignoreCase: false };

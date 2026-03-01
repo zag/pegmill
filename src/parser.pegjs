@@ -218,7 +218,7 @@ PrimaryExpression
     }
 
 RuleReferenceExpression
-  = name:IdentifierName !(__ (StringLiteral __)? "=") args:RuleArguments? {
+  = name:IdentifierName !(__ (RuleParams __)? (StringLiteral __)? "=") args:RuleArguments? {
       var node = { type: "rule_ref", name: name, location: location() };
       if (args !== null) { node.args = args; }
       return node;
