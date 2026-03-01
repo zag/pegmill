@@ -17,7 +17,7 @@ Fork the repository, create a branch, make your changes, and open a pull request
 
 Use the conventional commits format:
 
-```
+```text
 <type>(<scope>): <short summary>
 ```
 
@@ -32,7 +32,7 @@ Supported scopes:
 
 Examples:
 
-```
+```text
 feat(grammar): add parametric rule syntax Rule<Param>
 fix(pass): correct clone-expression handling of sequence nodes
 chore: upgrade eslint to 8.x

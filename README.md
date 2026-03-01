@@ -4,7 +4,9 @@
 
 > The only JavaScript PEG parser generator with parametric (generic) grammar rules
 
-WASM backend coming · Built for the LLM era
+Compile grammars to WebAssembly · Constrain LLM output to valid structure
+
+Pegmill is a drop-in replacement for PEG.js 0.10.0 — existing grammars work unchanged.
 
 ## Features
 
@@ -16,12 +18,10 @@ WASM backend coming · Built for the LLM era
 - **WASM backend** — compile grammars to WebAssembly (coming in v0.2.0)
 - **LLM constrained decoding** — restrict language model output to valid grammar (v0.3.0)
 
-## Use Cases
-
-- **DSLs** — query languages, config parsers, template engines
-- **Data formats** — custom protocols, structured log parsers
-- **Language tooling** — linters, formatters, transpilers
-- **LLM output validation** — constrain model output to valid grammar structure (v0.3.0)
+> **Why PEG for LLM output?** Language models produce text token by token. Constrained decoding
+> steers that process so only tokens that continue a valid parse are sampled — making hallucinated
+> structure impossible. A PEG grammar doubles as both parser and output constraint, with no
+> separate schema language required.
 
 ## Installation
 
@@ -69,7 +69,7 @@ parser.parse("(hello)", { startRule: "WordInParens" });   // → "hello"
 
 Parametric rules let you write reusable rule templates parameterized by other rules.
 
-### Syntax
+### Defining parametric rules
 
 Define a parametric rule with `RuleName<Param>`:
 
@@ -86,7 +86,7 @@ Integer = digits:$[0-9]+ { return parseInt(digits, 10); }
 Word    = $[a-zA-Z]+
 ```
 
-> For compiler internals see [CONTRIBUTING.md](CONTRIBUTING.md).
+> v0.1.0 supports single-parameter rules. For compiler internals see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## CLI Reference
 
@@ -101,19 +101,13 @@ $ pegmill [options] [--] [<input_file>]
 |--------|-------------|
 | `--allowed-start-rules <rules>` | Comma-separated list of rules the parser may start from (default: first rule) |
 | `--cache` | Cache intermediate results (avoids exponential time in pathological grammars) |
-| `-d, --dependency <dep>` | Declare a parser dependency (repeatable) |
-| `-e, --export-var <var>` | Global variable name for `globals`/`umd` format |
-| `--extra-options <json>` | Additional options as JSON passed to `peg.generate` |
-| `--extra-options-file <file>` | Same as above but read from a file |
 | `--format <fmt>` | Output format: `amd`, `commonjs`, `globals`, `umd` (default: `commonjs`) |
-| `-O, --optimize <goal>` | Optimize for `speed` or `size` (default: `speed`) |
 | `-o, --output <file>` | Output file (default: input filename with `.js` extension) |
-| `--plugin <plugin>` | Load a plugin (repeatable) |
 | `--trace` | Enable parser tracing |
 | `-v, --version` | Print version and exit |
 | `-h, --help` | Print help and exit |
 
-When no input file is given, standard input is used.
+When no input file is given, standard input is used. Run `pegmill --help` for the full option list.
 
 ## JavaScript API
 
@@ -166,6 +160,7 @@ Full syntax reference: [`src/parser.pegjs`](src/parser.pegjs)
 
 - **Node.js**: 14 or later
 - Generated parsers work in any environment where ES5 is available
+- Generated parsers are plain JavaScript (no TypeScript declarations in v0.1.0)
 
 ## Vision
 
