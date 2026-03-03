@@ -11,6 +11,22 @@ Forked from [PEG.js 0.10.0](https://github.com/pegjs/pegjs/blob/master/CHANGELOG
 
 ## [Unreleased]
 
+### Added
+- Compiler pass `remove-non-instantiated-templates`: strips template rule definitions
+  from the AST after instantiation so the code generator does not emit them
+- `allowedStartRules` cleanup in `remove-non-instantiated-templates`: resets start rule
+  to first concrete rule when the grammar begins with a template definition
+- Guard in `report-undefined-rules`: skips template rule bodies and parametric `rule_ref`
+  calls (args present) that are resolved later by `instantiate-templates`
+- Guard in `report-infinite-recursion`: skips template rule bodies and parametric calls
+  to prevent false positives before instantiation
+- Safe fallback in `asts.alwaysConsumesOnSuccess`: template calls and unresolved param
+  refs are conservatively treated as input-consuming (avoids crashes in check passes)
+
+### Changed
+- `compiler/index.js`: `instantiateTemplates` and `removeNonInstantiatedTemplates` wired
+  into the transform stage between parsing and code generation
+
 ### Planned
 - Phase 2: WASM backend (WebAssembly code generation target)
 
