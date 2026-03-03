@@ -98,12 +98,12 @@ describe("cloneExpression", function() {
   describe("args substitution in parametric rule_ref", function() {
     it("substitutes param names inside args", function() {
       // rule_ref{name:"Inner", args:[{name:"A", value:"A"}]} with {A:"Word"}
-      // → rule_ref{name:"Inner", args:[{name:"Word", value:"Word"}]}
+      // → rule_ref{name:"Inner", args:[{name:"Word", value: rule_ref("Word")}]}
       var expr = { type: "rule_ref", name: "Inner", args: [{ name: "A", value: "A" }] };
       var result = cloneExpression(expr, { "A": "Word" });
       expect(result.name).toBe("Inner");
       expect(result.args[0].name).toBe("Word");
-      expect(result.args[0].value).toBe("Word");
+      expect(result.args[0].value).toEqual({ type: "rule_ref", name: "Word" });
     });
 
     it("keeps args unchanged when param not in paramMap", function() {

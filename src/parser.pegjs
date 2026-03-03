@@ -70,6 +70,41 @@
   function buildList(head, tail, index) {
     return [head].concat(extractList(tail, index));
   }
+
+  function exprArgName(expr) {
+    switch (expr.type) {
+      case "literal":
+        return expr.value.replace(/[^a-zA-Z0-9]/g, function(c) {
+          return "_x" + c.charCodeAt(0).toString(16).toUpperCase() + "_";
+        }) || "_empty_";
+      case "class": {
+        var inner = expr.parts.map(function(p) {
+          function esc(c) {
+            return /[a-zA-Z0-9]/.test(c) ? c
+              : "_x" + c.charCodeAt(0).toString(16).toUpperCase() + "_";
+          }
+          return Array.isArray(p) ? esc(p[0]) + "_to_" + esc(p[1]) : esc(p);
+        }).join("_");
+        return (expr.inverted ? "_not_" : "_cls_") + inner;
+      }
+      case "one_or_more":
+        return exprArgName(expr.expression) + "_plus";
+      case "zero_or_more":
+        return exprArgName(expr.expression) + "_star";
+      case "optional":
+        return exprArgName(expr.expression) + "_opt";
+      case "any":
+        return "_any_";
+      default: {
+        var s = JSON.stringify(expr);
+        var h = 5381;
+        for (var i = 0; i < s.length; i++) {
+          h = ((h << 5) + h + s.charCodeAt(i)) & 0x7fffffff;
+        }
+        return "_h" + h.toString(36) + "_";
+      }
+    }
+  }
 }
 
 /* ---- Syntactic Grammar ----- */
@@ -352,9 +387,11 @@ RuleArgument
   = name:Identifier _ ":" _ value:RuleArgumentValue {
       return { name: name, value: value };
     }
-    /
-    name:Identifier _ {
-      return { name: name, value: name };
+  / expr:SuffixedExpression {
+      if (expr.type === "rule_ref" && !expr.args) {
+        return { name: expr.name, value: expr.name };
+      }
+      return { name: exprArgName(expr), value: expr };
     }
 
 RuleArgumentValue
