@@ -10,7 +10,10 @@
     "parametric",
     "generics",
     "grammar-templates",
-    "pegjs"
+    "rule-templates",
+    "generic-rules",
+    "pegjs",
+    "peggy"
   ],
   "homepage": "https://github.com/zag/pegmill",
   "bugs": { "url": "https://github.com/zag/pegmill/issues" },

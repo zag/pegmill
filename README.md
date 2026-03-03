@@ -69,26 +69,77 @@ parser.parse("(hello)", { startRule: "WordInParens" });   // → "hello"
 
 ## Parametric Rules
 
-Parametric rules let you write reusable rule templates parameterized by other rules.
+Parametric rules eliminate copy-paste in grammars. Define a rule template once,
+instantiate it with different arguments.
 
-### Defining parametric rules
-
-Define a parametric rule with `RuleName<Param>`:
+### 1. Rule references as arguments
 
 ```pegjs
-// A rule that matches a comma-separated list of whatever Elem matches
-List<Elem>
-  = head:Elem tail:("," Elem)* { return [head].concat(tail.map(t => t[1])); }
+// Without parametric rules you write this three times:
+// IntList  = head:Integer tail:("," Integer)* { ... }
+// WordList = head:Word    tail:("," Word)*    { ... }
+// IdList   = head:Ident   tail:("," Ident)*   { ... }
 
-// Instantiate with a concrete rule
-NumberList = List<Integer>
-WordList   = List<Word>
+// With Pegmill — one template:
+SepList<Item, Sep>
+  = head:Item tail:(Sep Item)* { return [head].concat(tail.map(t => t[1])); }
+
+IntList  = SepList<Integer, Comma>
+WordList = SepList<Word,    Comma>
+CsvLine  = SepList<Field,   Comma>
+TsvLine  = SepList<Field,   Tab>
 
 Integer = digits:$[0-9]+ { return parseInt(digits, 10); }
 Word    = $[a-zA-Z]+
+Field   = $[^,\t\n]+
+Comma   = ","
+Tab     = "\t"
 ```
 
-> v0.1.0 supports single-parameter rules. For compiler internals see [CONTRIBUTING.md](CONTRIBUTING.md).
+### 2. Inline expressions as arguments (character classes, quantifiers)
+
+Pass character classes and quantifiers directly — no wrapper rule needed:
+
+```pegjs
+start
+  = words:SepList<$[a-z]+,  ","> { return { words };  }
+  / hex:  SepList<$[0-9a-f]+, ":"> { return { hex };    }
+  / csv:  SepList<$[^,\n]+,  ","> { return { csv };    }
+
+SepList<Item, Sep>
+  = head:Item tail:(Sep Item)* { return [head].concat(tail.map(t => t[1])); }
+```
+
+```
+"abc,def,ghi"    → { words: ["abc", "def", "ghi"] }
+"ff:a0:1b:00"   → { hex:   ["ff", "a0", "1b", "00"] }
+"foo,bar,baz"   → { csv:   ["foo", "bar", "baz"] }
+```
+
+### 3. String literals as arguments
+
+Pass string literals to match different delimiters or keywords:
+
+```pegjs
+start  = bold / italic / code
+
+bold   = Tag<"b">
+italic = Tag<"i">
+code   = Tag<"code">
+
+// One template replaces three identical rules
+Tag<T> = "<" open:T ">" content:$[^<]+ "</" T ">"
+         { return { tag: open, content }; }
+```
+
+```
+"<b>hello</b>"       → { tag: "b",    content: "hello" }
+"<i>world</i>"       → { tag: "i",    content: "world" }
+"<code>x = 1</code>" → { tag: "code", content: "x = 1" }
+```
+
+> Arguments can be rule references, character classes (`[a-z]+`), quantified expressions,
+> or string literals (`"keyword"`). Sequences as arguments require a named wrapper rule.
 
 ## CLI Reference
 
@@ -171,6 +222,17 @@ Full syntax reference: [`src/parser.pegjs`](src/parser.pegjs)
 **v0.2.0** 🔜 WASM backend — compile grammars directly to WebAssembly
 
 **v0.3.0** 🔬 LLM constrained decoding — define valid output structure for language models
+
+## Prior Art & Motivation
+
+Parametric grammar rules have been a long-requested feature in the PEG.js ecosystem:
+
+- [peg.js #45](https://github.com/pegjs/pegjs/issues/45) — *"Implement parametrizable rules"* — open since 2011 (14 years)
+- [peg.js #36](https://github.com/pegjs/pegjs/issues/36) — *"Parametrize the grammar by externally-supplied variables"* — string literal args
+- [peggy #634](https://github.com/peggyjs/peggy/issues/634) — *"Rule Templates"* — open feature request with community interest
+- [peggy PR #337](https://github.com/peggyjs/peggy/pull/337) — template implementation attempt, closed without merge; reviewers specifically requested support for passing arbitrary expressions as arguments (not just rule references)
+
+Pegmill implements all of the above: rule references, inline character classes, quantified expressions, and string literals as template arguments — as a shipping feature in v0.1.0.
 
 ## License & Attribution
 
