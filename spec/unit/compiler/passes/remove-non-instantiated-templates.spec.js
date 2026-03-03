@@ -1,5 +1,3 @@
-/* global peg */
-
 "use strict";
 
 var pass = require("../../../../lib/compiler/passes/remove-non-instantiated-templates");
