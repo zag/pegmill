@@ -1,4 +1,5 @@
 [![npm](https://img.shields.io/npm/v/pegmill.svg)](https://www.npmjs.com/package/pegmill)
+[![CI](https://github.com/zag/pegmill/actions/workflows/ci.yml/badge.svg)](https://github.com/zag/pegmill/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Pegmill
