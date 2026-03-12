@@ -28,7 +28,7 @@ jobs:
         run: npm install
 
       - name: Lint
-        run: make lint
+        run: npm run lint
 
       - name: Test
-        run: make spec
+        run: npm run test:spec

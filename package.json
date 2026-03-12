@@ -29,7 +29,14 @@
   "bin": "bin/pegmill",
   "repository": { "type": "git", "url": "https://github.com/zag/pegmill.git" },
   "scripts": {
-    "test": "make lint && make spec"
+    "test": "npm run lint && npm run test:spec",
+    "test:spec": "node_modules/.bin/jasmine",
+    "lint": "node_modules/.bin/eslint lib/**/*.js \"spec/**/*.js\" --ignore-pattern spec/vendor/ benchmark/*.js benchmark/run bin/pegmill",
+    "build": "node scripts/build-browser.js",
+    "build:parser": "node scripts/build-parser.js",
+    "clean": "node -e \"require('fs').rmSync('browser',{recursive:true,force:true})\"",
+    "serve:spec": "node_modules/.bin/http-server",
+    "benchmark": "benchmark/run"
   },
   "devDependencies": {
     "browserify": "13.1.0",

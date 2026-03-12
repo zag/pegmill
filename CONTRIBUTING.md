@@ -27,7 +27,7 @@ Supported scopes:
 |-----------|-------------------------------------------------------------|
 | `grammar` | Language syntax, `src/parser.pegjs`, `lib/parser.js`       |
 | `pass`    | Compiler passes in `lib/compiler/passes/`                   |
-| `build`   | Makefile, npm scripts, browserify                           |
+| `build`   | npm scripts, browserify, build helpers                      |
 | `chore`   | Dependencies, CI, housekeeping                              |
 
 Examples:
@@ -43,8 +43,8 @@ chore: upgrade eslint to 8.x
 Run the test suite and linter:
 
 ```console
-$ make spec
-$ make lint
+$ npm run lint
+$ npm run test:spec
 ```
 
 All tests must pass and linter must report no errors.

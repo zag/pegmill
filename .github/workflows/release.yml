@@ -26,27 +26,27 @@ jobs:
         run: npm install
 
       - name: Lint
-        run: make lint
+        run: npm run lint
 
       - name: Test
-        run: make spec
+        run: npm run test:spec
 
       - name: Build browser bundle
-        run: make browser
+        run: npm run build
 
       - name: Verify version matches tag
         run: |
-          VERSION=$(cat VERSION)
+          VERSION=$(node -p "require('./package.json').version")
           TAG=${GITHUB_REF_NAME#v}
           if [ "$VERSION" != "$TAG" ]; then
-            echo "VERSION file ($VERSION) does not match tag ($TAG)"
+            echo "package.json version ($VERSION) does not match tag ($TAG)"
             exit 1
           fi
 
       - name: Extract changelog entry
         id: changelog
         run: |
-          VERSION=$(cat VERSION)
+          VERSION=$(node -p "require('./package.json').version")
           # Extract the section between ## [VERSION] and the next ## [
           NOTES=$(awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md)
           if [ -z "$NOTES" ]; then
@@ -68,6 +68,4 @@ jobs:
         with:
           name: Pegmill ${{ github.ref_name }}
           body: ${{ steps.changelog.notes }}
-          files: |
-            browser/peg-*.js
-            browser/peg-*.min.js
+          files: browser/peg-*.js
