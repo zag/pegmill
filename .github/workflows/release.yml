@@ -1,0 +1,73 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    name: Release ${{ github.ref_name }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: make lint
+
+      - name: Test
+        run: make spec
+
+      - name: Build browser bundle
+        run: make browser
+
+      - name: Verify version matches tag
+        run: |
+          VERSION=$(cat VERSION)
+          TAG=${GITHUB_REF_NAME#v}
+          if [ "$VERSION" != "$TAG" ]; then
+            echo "VERSION file ($VERSION) does not match tag ($TAG)"
+            exit 1
+          fi
+
+      - name: Extract changelog entry
+        id: changelog
+        run: |
+          VERSION=$(cat VERSION)
+          # Extract the section between ## [VERSION] and the next ## [
+          NOTES=$(awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            NOTES="See [CHANGELOG.md](https://github.com/zag/pegmill/blob/main/CHANGELOG.md) for details."
+          fi
+          {
+            echo "notes<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Pegmill ${{ github.ref_name }}
+          body: ${{ steps.changelog.notes }}
+          files: |
+            browser/peg-*.js
+            browser/peg-*.min.js

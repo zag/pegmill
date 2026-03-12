@@ -11,6 +11,10 @@ Forked from [PEG.js 0.10.0](https://github.com/pegjs/pegjs/blob/master/CHANGELOG
 
 ## [Unreleased]
 
+---
+
+## [0.1.1] — 2026-03-12
+
 ### Added
 - Inline expressions as template arguments (R3): character classes (`[a-z]+`), quantified
   expressions, and any `SuffixedExpression` can now be passed directly as args —
@@ -32,6 +36,7 @@ Forked from [PEG.js 0.10.0](https://github.com/pegjs/pegjs/blob/master/CHANGELOG
 - Safe fallback in `asts.alwaysConsumesOnSuccess`: template calls and unresolved param
   refs are conservatively treated as input-consuming (avoids crashes in check passes)
 - GitHub Actions CI workflow: matrix test on Node.js 18, 20, 22 (replaces `.travis.yml`)
+- GitHub Actions release workflow: publishes to npm and creates GitHub Release on tag push
 - `lib/compiler/passes/expr-arg-name.js`: shared utility for canonical arg name computation
 
 ### Changed
@@ -41,9 +46,6 @@ Forked from [PEG.js 0.10.0](https://github.com/pegjs/pegjs/blob/master/CHANGELOG
   strings); backward compatible with existing string-valued `paramMap`
 - `instantiate-templates.js`: `paramMap` values are now expression AST nodes, enabling
   direct substitution of inline expressions and string literals
-
-### Planned
-- Phase 2: WASM backend (WebAssembly code generation target)
 
 ---
 
@@ -69,5 +71,6 @@ Forked from [PEG.js 0.10.0](https://github.com/pegjs/pegjs/blob/master/CHANGELOG
   (quadristan, MIT) — reference implementation of template instantiation
 - Related upstream discussion: [peggyjs/peggy#634](https://github.com/peggyjs/peggy/issues/634)
 
-[Unreleased]: https://github.com/zag/pegmill/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/zag/pegmill/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/zag/pegmill/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/zag/pegmill/releases/tag/v0.1.0
