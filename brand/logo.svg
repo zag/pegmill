@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 60" width="340" height="60">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500');
+  </style>
+  <text
+    font-family="'JetBrains Mono', monospace"
+    font-weight="500"
+    font-size="36"
+    x="170"
+    y="44"
+    text-anchor="middle"
+  ><tspan fill="#0F172A">peg</tspan><tspan fill="#06B6D4">::=</tspan><tspan fill="#0F172A">mill</tspan></text>
+</svg>

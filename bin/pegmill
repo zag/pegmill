@@ -7,6 +7,27 @@ var path    = require("path");
 var peg     = require("../lib/peg");
 var objects = require("../lib/utils/objects");
 
+/* Brand — CLI bracket identity */
+
+var isTTY = process.stderr.isTTY;
+
+function bracket(label, msg) {
+  var pad = "       ".slice(0, 7 - label.length);
+  if (isTTY) {
+    console.error("\x1b[36m\u27E6\x1b[0m " + pad + label + " \x1b[36m\u27E7\x1b[0m " + msg);
+  } else {
+    console.error("[" + label + "] " + msg);
+  }
+}
+
+function ok(msg) {
+  if (isTTY) {
+    console.error("\x1b[32m\u2714\x1b[0m " + msg);
+  } else {
+    console.error("OK " + msg);
+  }
+}
+
 /* Helpers */
 
 function printVersion() {
@@ -313,19 +334,31 @@ if (outputFile === "-") {
 
 readStream(inputStream, function(input) {
   var source;
+  var startTime = Date.now();
+  var inputName = inputFile === "-" ? "stdin" : inputFile;
+
+  bracket("parse", inputName);
 
   try {
     source = peg.generate(input, options);
   } catch (e) {
     if (e.location !== undefined) {
-      abort(e.location.start.line + ":" + e.location.start.column + ": " + e.message);
+      bracket("error", e.location.start.line + ":" + e.location.start.column + ": " + e.message);
     } else {
-      abort(e.message);
+      bracket("error", e.message);
     }
+    exitFailure();
+    return;
   }
+
+  var outputName = outputFile === "-" ? "stdout" : outputFile;
+  bracket("emit", outputName);
 
   outputStream.write(source);
   if (outputStream !== process.stdout) {
     outputStream.end();
   }
+
+  var elapsed = Date.now() - startTime;
+  ok("build completed in " + elapsed + "ms");
 });

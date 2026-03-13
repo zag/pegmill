@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&amp;family=Inter:wght@400');
+  </style>
+  <rect width="1280" height="640" fill="#0F172A"/>
+  <text
+    font-family="'JetBrains Mono', monospace"
+    font-weight="500"
+    font-size="72"
+    text-anchor="middle"
+    y="300"
+  ><tspan x="640" fill="#F8FAFC">peg</tspan><tspan fill="#22D3EE">::=</tspan><tspan fill="#F8FAFC">mill</tspan></text>
+  <text
+    x="640"
+    y="370"
+    font-family="'Inter', sans-serif"
+    font-weight="400"
+    font-size="24"
+    fill="#64748B"
+    text-anchor="middle"
+  >WASM-native PEG parser generator</text>
+</svg>

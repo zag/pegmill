@@ -1,12 +1,17 @@
-[![npm](https://img.shields.io/npm/v/pegmill.svg)](https://www.npmjs.com/package/pegmill)
-[![CI](https://github.com/zag/pegmill/actions/workflows/ci.yml/badge.svg)](https://github.com/zag/pegmill/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<p align="center">
+  <img src="brand/logo.svg" alt="peg ::= mill" width="640">
+</p>
 
-# Pegmill
+<p align="center">
+  <a href="https://www.npmjs.com/package/pegmill"><img src="https://img.shields.io/npm/v/pegmill.svg?color=06B6D4" alt="npm"></a>
+  <a href="https://github.com/zag/pegmill/actions/workflows/ci.yml"><img src="https://github.com/zag/pegmill/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/license-Apache--2.0-06B6D4.svg" alt="License"></a>
+</p>
 
-> The only JavaScript PEG parser generator with parametric (generic) grammar rules
-
-Compile grammars to WebAssembly · Constrain LLM output to valid structure
+<p align="center">
+  The only JavaScript PEG parser generator with parametric (generic) grammar rules<br>
+  Compile grammars to WebAssembly · Constrain LLM output to valid structure
+</p>
 
 Pegmill is a drop-in replacement for PEG.js 0.10.0 — existing grammars work unchanged.
 
