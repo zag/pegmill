@@ -38,90 +38,84 @@ describe("generated parser behavior", function() {
   }
 
   beforeEach(function() {
-    this.addMatchers({
-      toParse: function(input, expected, options) {
-        options = options !== undefined ? options : {};
+    jasmine.addMatchers({
+      toParse: function(matchersUtil) {
+        return {
+          compare: function(actual, input, expected, options) {
+            options = options !== undefined ? options : {};
 
-        var result;
+            var result;
 
-        try {
-          result = this.actual.parse(input, options);
-        } catch (e) {
-          this.message = function() {
-            return "Expected " + jasmine.pp(input) + " "
-                 + "with options " + jasmine.pp(options) + " "
-                 + "to parse" + (expected !== undefined ? " as " + jasmine.pp(expected) : "") + ", "
-                 + "but it failed to parse with message "
-                 + jasmine.pp(e.message) + ".";
-          };
+            try {
+              result = actual.parse(input, options);
+            } catch (e) {
+              return {
+                pass: false,
+                message: "Expected " + jasmine.pp(input) + " "
+                  + "with options " + jasmine.pp(options) + " "
+                  + "to parse" + (expected !== undefined ? " as " + jasmine.pp(expected) : "") + ", "
+                  + "but it failed to parse with message "
+                  + jasmine.pp(e.message) + "."
+              };
+            }
 
-          return false;
-        }
+            if (expected !== undefined) {
+              var pass = matchersUtil.equals(result, expected);
+              return {
+                pass: pass,
+                message: "Expected " + jasmine.pp(input) + " "
+                  + "with options " + jasmine.pp(options) + " "
+                  + (pass ? "not " : "")
+                  + "to parse as " + jasmine.pp(expected) + ", "
+                  + "but it parsed as " + jasmine.pp(result) + "."
+              };
+            }
 
-        if (expected !== undefined) {
-          this.message = function() {
-            return "Expected " + jasmine.pp(input) + " "
-                 + "with options " + jasmine.pp(options) + " "
-                 + (this.isNot ? "not " : "")
-                 + "to parse as " + jasmine.pp(expected) + ", "
-                 + "but it parsed as " + jasmine.pp(result) + ".";
-          };
-
-          return this.env.equals_(result, expected);
-        } else {
-          return true;
-        }
+            return { pass: true };
+          }
+        };
       },
 
-      toFailToParse: function(input, details, options) {
-        options = options !== undefined ? options : {};
+      toFailToParse: function(matchersUtil) {
+        return {
+          compare: function(actual, input, details, options) {
+            options = options !== undefined ? options : {};
 
-        var result, key;
+            var result, key;
 
-        try {
-          result = this.actual.parse(input, options);
-        } catch (e) {
-          if (this.isNot) {
-            this.message = function() {
-              return "Expected " + jasmine.pp(input)
-                   + "with options " + jasmine.pp(options) + " "
-                   + "to parse, "
-                   + "but it failed with message "
-                   + jasmine.pp(e.message) + ".";
-            };
-          } else {
-            if (details) {
-              for (key in details) {
-                if (details.hasOwnProperty(key)) {
-                  if (!this.env.equals_(e[key], details[key])) {
-                    this.message = function() {
-                      return "Expected " + jasmine.pp(input) + " "
-                           + "with options " + jasmine.pp(options) + " "
-                           + "to fail to parse"
-                           + (details ? " with details " + jasmine.pp(details) : "") + ", "
-                           + "but " + jasmine.pp(key) + " "
-                           + "is " + jasmine.pp(e[key]) + ".";
-                    };
-
-                    return false;
+            try {
+              result = actual.parse(input, options);
+            } catch (e) {
+              if (details) {
+                for (key in details) {
+                  if (details.hasOwnProperty(key)) {
+                    if (!matchersUtil.equals(e[key], details[key])) {
+                      return {
+                        pass: false,
+                        message: "Expected " + jasmine.pp(input) + " "
+                          + "with options " + jasmine.pp(options) + " "
+                          + "to fail to parse"
+                          + " with details " + jasmine.pp(details) + ", "
+                          + "but " + jasmine.pp(key) + " "
+                          + "is " + jasmine.pp(e[key]) + "."
+                      };
+                    }
                   }
                 }
               }
+              return { pass: true };
             }
+
+            return {
+              pass: false,
+              message: "Expected " + jasmine.pp(input) + " "
+                + "with options " + jasmine.pp(options) + " "
+                + "to fail to parse"
+                + (details ? " with details " + jasmine.pp(details) : "") + ", "
+                + "but it parsed as " + jasmine.pp(result) + "."
+            };
           }
-
-          return true;
-        }
-
-        this.message = function() {
-          return "Expected " + jasmine.pp(input) + " "
-               + "with options " + jasmine.pp(options) + " "
-               + "to fail to parse"
-               + (details ? " with details " + jasmine.pp(details) : "") + ", "
-               + "but it parsed as " + jasmine.pp(result) + ".";
         };
-
-        return false;
       }
     });
 

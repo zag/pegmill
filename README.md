@@ -145,7 +145,7 @@ Tag<T> = "<" open:T ">" content:$[^<]+ "</" T ">"
 
 ```console
 $ pegmill --version
-pegmill 0.1.0
+pegmill 0.1.2
 
 $ pegmill [options] [--] [<input_file>]
 ```
@@ -211,13 +211,15 @@ Full syntax reference: [`src/parser.pegjs`](src/parser.pegjs)
 
 ## Compatibility
 
-- **Node.js**: 14 or later
+- **Node.js**: 18 or later
 - Generated parsers work in any environment where ES5 is available
 - Generated parsers are plain JavaScript (no TypeScript declarations in v0.1.0)
 
 ## Vision
 
 **v0.1.0** ✅ Parametric grammar rules — write reusable rule templates with `Rule<Param>` syntax
+
+**v0.1.3** 🔧 TypeScript declarations, esbuild browser bundle, test coverage (c8)
 
 **v0.2.0** 🔜 WASM backend — compile grammars directly to WebAssembly
 

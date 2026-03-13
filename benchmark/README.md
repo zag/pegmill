@@ -20,7 +20,7 @@ All commands in the following steps need to be executed in Pegmill root director
   2. Execute the benchmark suite:
 
      ```console
-     $ make benchmark
+     $ npm run benchmark
      ```
 
   3. Wait for results.
@@ -42,7 +42,7 @@ All commands in the following steps need to be executed in Pegmill root director
   3. Build browser version of Pegmill:
 
      ```console
-     $ make browser
+     $ npm run build
      ```
 
   4. Serve Pegmill root directory using a web server:

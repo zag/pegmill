@@ -4,35 +4,44 @@
 
 describe("plugin API", function() {
   beforeEach(function() {
-    this.addMatchers({
+    jasmine.addMatchers({
       toBeObject: function() {
-        this.message = function() {
-          return "Expected " + jasmine.pp(this.actual) + " "
-               + (this.isNot ? "not " : "")
-               + "to be an object.";
+        return {
+          compare: function(actual) {
+            var pass = actual !== null && typeof actual === "object";
+            return {
+              pass: pass,
+              message: "Expected " + jasmine.pp(actual) + " "
+                + (pass ? "not " : "") + "to be an object."
+            };
+          }
         };
-
-        return this.actual !== null && typeof this.actual === "object";
       },
 
       toBeArray: function() {
-        this.message = function() {
-          return "Expected " + jasmine.pp(this.actual) + " "
-               + (this.isNot ? "not " : "")
-               + "to be an array.";
+        return {
+          compare: function(actual) {
+            var pass = Object.prototype.toString.apply(actual) === "[object Array]";
+            return {
+              pass: pass,
+              message: "Expected " + jasmine.pp(actual) + " "
+                + (pass ? "not " : "") + "to be an array."
+            };
+          }
         };
-
-        return Object.prototype.toString.apply(this.actual) === "[object Array]";
       },
 
       toBeFunction: function() {
-        this.message = function() {
-          return "Expected " + jasmine.pp(this.actual) + " "
-               + (this.isNot ? "not " : "")
-               + "to be a function.";
+        return {
+          compare: function(actual) {
+            var pass = typeof actual === "function";
+            return {
+              pass: pass,
+              message: "Expected " + jasmine.pp(actual) + " "
+                + (pass ? "not " : "") + "to be a function."
+            };
+          }
         };
-
-        return typeof this.actual === "function";
       }
     });
   });

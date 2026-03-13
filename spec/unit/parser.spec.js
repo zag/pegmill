@@ -173,78 +173,74 @@ describe("Pegmill grammar parser", function() {
   })();
 
   beforeEach(function() {
-    this.addMatchers({
-      toParseAs:     function(expected) {
-        var result;
+    jasmine.addMatchers({
+      toParseAs: function(matchersUtil) {
+        return {
+          compare: function(actual, expected) {
+            var result;
 
-        try {
-          result = peg.parser.parse(this.actual);
-        } catch (e) {
-          this.message = function() {
-            return "Expected " + jasmine.pp(this.actual) + " "
-                 + "to parse as " + jasmine.pp(expected) + ", "
-                 + "but it failed to parse with message "
-                 + jasmine.pp(e.message) + ".";
-          };
+            try {
+              result = peg.parser.parse(actual);
+            } catch (e) {
+              return {
+                pass: false,
+                message: "Expected " + jasmine.pp(actual) + " "
+                  + "to parse as " + jasmine.pp(expected) + ", "
+                  + "but it failed to parse with message "
+                  + jasmine.pp(e.message) + "."
+              };
+            }
 
-          return false;
-        }
+            stripLocation(result);
+            var pass = matchersUtil.equals(result, expected);
 
-        stripLocation(result);
-
-        this.message = function() {
-          return "Expected " + jasmine.pp(this.actual) + " "
-               + (this.isNot ? "not " : "")
-               + "to parse as " + jasmine.pp(expected) + ", "
-               + "but it parsed as " + jasmine.pp(result) + ".";
+            return {
+              pass: pass,
+              message: "Expected " + jasmine.pp(actual) + " "
+                + (pass ? "not " : "")
+                + "to parse as " + jasmine.pp(expected) + ", "
+                + "but it parsed as " + jasmine.pp(result) + "."
+            };
+          }
         };
-
-        return this.env.equals_(result, expected);
       },
 
-      toFailToParse: function(details) {
-        var result, key;
+      toFailToParse: function(matchersUtil) {
+        return {
+          compare: function(actual, details) {
+            var result, key;
 
-        try {
-          result = peg.parser.parse(this.actual);
-        } catch (e) {
-          if (this.isNot) {
-            this.message = function() {
-              return "Expected " + jasmine.pp(this.actual) + " to parse, "
-                   + "but it failed with message "
-                   + jasmine.pp(e.message) + ".";
-            };
-          } else {
-            if (details) {
-              for (key in details) {
-                if (details.hasOwnProperty(key)) {
-                  if (!this.env.equals_(e[key], details[key])) {
-                    this.message = function() {
-                      return "Expected " + jasmine.pp(this.actual) + " to fail to parse"
-                           + (details ? " with details " + jasmine.pp(details) : "") + ", "
-                           + "but " + jasmine.pp(key) + " "
-                           + "is " + jasmine.pp(e[key]) + ".";
-                    };
-
-                    return false;
+            try {
+              result = peg.parser.parse(actual);
+            } catch (e) {
+              if (details) {
+                for (key in details) {
+                  if (details.hasOwnProperty(key)) {
+                    if (!matchersUtil.equals(e[key], details[key])) {
+                      return {
+                        pass: false,
+                        message: "Expected " + jasmine.pp(actual) + " to fail to parse"
+                          + " with details " + jasmine.pp(details) + ", "
+                          + "but " + jasmine.pp(key) + " "
+                          + "is " + jasmine.pp(e[key]) + "."
+                      };
+                    }
                   }
                 }
               }
+              return { pass: true };
             }
+
+            stripLocation(result);
+
+            return {
+              pass: false,
+              message: "Expected " + jasmine.pp(actual) + " to fail to parse"
+                + (details ? " with details " + jasmine.pp(details) : "") + ", "
+                + "but it parsed as " + jasmine.pp(result) + "."
+            };
           }
-
-          return true;
-        }
-
-        stripLocation(result);
-
-        this.message = function() {
-          return "Expected " + jasmine.pp(this.actual) + " to fail to parse"
-               + (details ? " with details " + jasmine.pp(details) : "") + ", "
-               + "but it parsed as " + jasmine.pp(result) + ".";
         };
-
-        return false;
       }
     });
   });

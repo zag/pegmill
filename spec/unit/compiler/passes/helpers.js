@@ -3,107 +3,99 @@
 "use strict";
 
 beforeEach(function() {
-  this.addMatchers({
-    toChangeAST: function(grammar, details, options) {
-      options = options !== undefined ? options : {};
+  function matchDetails(value, details) {
+    function isArray(value) {
+      return Object.prototype.toString.apply(value) === "[object Array]";
+    }
 
-      function matchDetails(value, details) {
-        function isArray(value) {
-          return Object.prototype.toString.apply(value) === "[object Array]";
-        }
+    function isObject(value) {
+      return value !== null && typeof value === "object";
+    }
 
-        function isObject(value) {
-          return value !== null && typeof value === "object";
-        }
+    var i, key;
 
-        var i, key;
-
-        if (isArray(details)) {
-          if (!isArray(value)) { return false; }
-
-          if (value.length !== details.length) { return false; }
-          for (i = 0; i < details.length; i++) {
-            if (!matchDetails(value[i], details[i])) { return false; }
-          }
-
-          return true;
-        } else if (isObject(details)) {
-          if (!isObject(value)) { return false; }
-
-          for (key in details) {
-            if (details.hasOwnProperty(key)) {
-              if (!(key in value)) { return false; }
-
-              if (!matchDetails(value[key], details[key])) { return false; }
-            }
-          }
-
-          return true;
-        } else {
-          return value === details;
+    if (isArray(details)) {
+      if (!isArray(value)) { return false; }
+      if (value.length !== details.length) { return false; }
+      for (i = 0; i < details.length; i++) {
+        if (!matchDetails(value[i], details[i])) { return false; }
+      }
+      return true;
+    } else if (isObject(details)) {
+      if (!isObject(value)) { return false; }
+      for (key in details) {
+        if (details.hasOwnProperty(key)) {
+          if (!(key in value)) { return false; }
+          if (!matchDetails(value[key], details[key])) { return false; }
         }
       }
+      return true;
+    } else {
+      return value === details;
+    }
+  }
 
-      var ast = peg.parser.parse(grammar);
+  jasmine.addMatchers({
+    toChangeAST: function() {
+      return {
+        compare: function(actual, grammar, details, options) {
+          options = options !== undefined ? options : {};
 
-      this.actual(ast, options);
+          var ast = peg.parser.parse(grammar);
+          actual(ast, options);
+          var pass = matchDetails(ast, details);
 
-      this.message = function() {
-        return "Expected the pass "
-             + "with options " + jasmine.pp(options) + " "
-             + (this.isNot ? "not " : "")
-             + "to change the AST " + jasmine.pp(ast) + " "
-             + "to match " + jasmine.pp(details) + ", "
-             + "but it " + (this.isNot ? "did" : "didn't") + ".";
+          return {
+            pass: pass,
+            message: pass
+              ? "Expected the pass with options " + jasmine.pp(options)
+                + " not to change the AST " + jasmine.pp(ast)
+                + " to match " + jasmine.pp(details) + ", but it did."
+              : "Expected the pass with options " + jasmine.pp(options)
+                + " to change the AST " + jasmine.pp(ast)
+                + " to match " + jasmine.pp(details) + ", but it didn't."
+          };
+        }
       };
-
-      return matchDetails(ast, details);
     },
 
-    toReportError: function(grammar, details) {
-      var ast = peg.parser.parse(grammar),
-          key;
+    toReportError: function(matchersUtil) {
+      return {
+        compare: function(actual, grammar, details) {
+          var ast = peg.parser.parse(grammar),
+              key;
 
-      try {
-        this.actual(ast);
-      } catch (e) {
-        if (this.isNot) {
-          this.message = function() {
-            return "Expected the pass not to report an error "
-                 + "for grammar " + jasmine.pp(grammar) + ", "
-                 + "but it did.";
-          };
-        } else {
-          if (details) {
-            for (key in details) {
-              if (details.hasOwnProperty(key)) {
-                if (!this.env.equals_(e[key], details[key])) {
-                  this.message = function() {
-                    return "Expected the pass to report an error "
-                         + "with details " + jasmine.pp(details) + " "
-                         + "for grammar " + jasmine.pp(grammar) + ", "
-                         + "but " + jasmine.pp(key) + " "
-                         + "is " + jasmine.pp(e[key]) + ".";
-                  };
-
-                  return false;
+          try {
+            actual(ast);
+          } catch (e) {
+            if (details) {
+              for (key in details) {
+                if (details.hasOwnProperty(key)) {
+                  if (!matchersUtil.equals(e[key], details[key])) {
+                    return {
+                      pass: false,
+                      message: "Expected the pass to report an error"
+                        + " with details " + jasmine.pp(details)
+                        + " for grammar " + jasmine.pp(grammar)
+                        + ", but " + jasmine.pp(key)
+                        + " is " + jasmine.pp(e[key]) + "."
+                    };
+                  }
                 }
               }
             }
+            return { pass: true };
           }
+
+          return {
+            pass: false,
+            message: "Expected the pass to report an error"
+              + (details ? " with details " + jasmine.pp(details) : "")
+              + " for grammar " + jasmine.pp(grammar)
+              + ", but it didn't."
+          };
         }
-
-        return true;
-      }
-
-      this.message = function() {
-        return "Expected the pass to report an error "
-             + (details ? "with details " + jasmine.pp(details) + " ": "")
-             + "for grammar " + jasmine.pp(grammar) + ", "
-             + "but it didn't.";
       };
-
-      return false;
     }
   });
 });

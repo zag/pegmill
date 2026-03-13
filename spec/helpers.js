@@ -1,9 +1,15 @@
-/* global require */
 
 "use strict";
 
-(function(root) {
-  if (typeof module !== 'undefined') {
-    root.peg = require("../lib/peg.js");
-  }
-}(this));
+global.peg = require("../lib/peg.js");
+
+// jasmine.pp was removed in Jasmine 4.x — polyfill for legacy spec files
+if (typeof jasmine !== "undefined" && typeof jasmine.pp !== "function") {
+  jasmine.pp = function(value) {
+    try {
+      return JSON.stringify(value, null, 2);
+    } catch (e) {
+      return String(value);
+    }
+  };
+}

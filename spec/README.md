@@ -19,7 +19,7 @@ All commands in the following steps need to be executed in Pegmill root director
   2. Execute the spec suite:
 
      ```console
-     $ make spec
+     $ npm run test:spec
      ```
 
   3. Watch the specs pass (or fail).
@@ -41,7 +41,7 @@ All commands in the following steps need to be executed in Pegmill root director
   3. Build browser version of Pegmill:
 
      ```console
-     $ make browser
+     $ npm run build
      ```
 
   4. Serve Pegmill root directory using a web server:
