@@ -1,6 +1,6 @@
 {
   "name": "pegmill",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "WASM-native PEG parser generator",
   "keywords": [
     "parser generator",
@@ -16,7 +16,9 @@
     "peggy"
   ],
   "homepage": "https://github.com/zag/pegmill",
-  "bugs": { "url": "https://github.com/zag/pegmill/issues" },
+  "bugs": {
+    "url": "https://github.com/zag/pegmill/issues"
+  },
   "license": "Apache-2.0",
   "author": "Aliaksandr Zahatski",
   "files": [
@@ -27,7 +29,10 @@
   ],
   "main": "lib/peg",
   "bin": "bin/pegmill",
-  "repository": { "type": "git", "url": "https://github.com/zag/pegmill.git" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zag/pegmill.git"
+  },
   "scripts": {
     "test": "npm run lint && npm run test:spec",
     "test:spec": "node_modules/.bin/jasmine",
@@ -40,12 +45,12 @@
   },
   "devDependencies": {
     "browserify": "13.1.0",
-    "eslint": "2.13.1",
-    "http-server": "0.9.0",
-    "jasmine-node": "1.14.5",
+    "eslint": "^8.57.1",
+    "http-server": "14.1.1",
+    "jasmine": "^5.13.0",
     "uglify-js": "2.7.0"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   }
 }
